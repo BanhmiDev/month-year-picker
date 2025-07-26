@@ -31,6 +31,7 @@ Future<DateTime?> showMonthYearPicker({
   TextDirection? textDirection,
   TransitionBuilder? builder,
   MonthYearPickerMode initialMonthYearPickerMode = MonthYearPickerMode.month,
+  bool popOnDateSelection = false
 }) async {
   initialDate = monthYearOnly(initialDate);
   firstDate = monthYearOnly(firstDate);
@@ -58,6 +59,7 @@ Future<DateTime?> showMonthYearPicker({
     lastDate: lastDate,
     initialMonthYearPickerMode: initialMonthYearPickerMode,
     selectableMonthYearPredicate: selectableMonthYearPredicate,
+    popOnDateSelection: popOnDateSelection
   );
 
   if (textDirection != null) {
@@ -99,6 +101,7 @@ class MonthYearPickerDialog extends StatefulWidget {
     required this.lastDate,
     required this.initialMonthYearPickerMode,
     this.selectableMonthYearPredicate,
+    this.popOnDateSelection = false
   }) : super(key: key);
 
   // ---------------------------------- FIELDS ---------------------------------
@@ -107,6 +110,7 @@ class MonthYearPickerDialog extends StatefulWidget {
   final DateTime lastDate;
   final MonthYearPickerMode initialMonthYearPickerMode;
   final SelectableMonthYearPredicate? selectableMonthYearPredicate;
+  final bool popOnDateSelection;
 
   // --------------------------------- METHODS ---------------------------------
   @override
@@ -181,7 +185,7 @@ class _MonthYearPickerDialogState extends State<MonthYearPickerDialog> {
             onPressed: () => Navigator.pop(context),
             child: Text(localizations.cancelButtonLabel),
           ),
-          TextButton(
+          if (!widget.popOnDateSelection) TextButton(
             onPressed: () => Navigator.pop(context, _selectedDate),
             child: Text(localizations.okButtonLabel),
           ),
@@ -387,6 +391,9 @@ class _MonthYearPickerDialogState extends State<MonthYearPickerDialog> {
     setState(() {
       _selectedDate = DateTime(date.year, date.month);
     });
+    if (widget.popOnDateSelection) {
+      Navigator.pop(context, _selectedDate);
+    }
   }
 
   void _updateSelectedDate(DateTime date) {
